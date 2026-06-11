@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ObraControl AI · Cuantificador de Acero</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ObraControl AI">
+<meta name="theme-color" content="#0D2B5E">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:#F5F3EE;font-family:system-ui,-apple-system,sans-serif;color:#0D2B5E;}
+button:focus{outline:none;}
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+#pg-portada{background:#F5F3EE;min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;gap:22px;}
+#pg-portada.active{display:flex;}
+.logo-ring{width:100px;height:100px;border-radius:50%;border:2px solid #B5D4F4;background:#FDFCF9;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.logo-ring svg{width:52px;height:52px;fill:none;stroke:#0D2B5E;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.app-nombre{font-size:32px;font-weight:700;color:#0D2B5E;letter-spacing:-0.5px;}
+.app-sub{font-size:15px;color:#185FA5;line-height:1.6;}
+.btn-iniciar{background:#0D2B5E;color:#FDFCF9;border:none;border-radius:14px;font-size:18px;font-weight:700;padding:18px 0;width:280px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;margin:0 auto;}
+.btn-iniciar:hover{background:#0A2248;}
+.ver{font-size:11px;color:#8A8580;}
+.portada-install{position:fixed;top:20px;right:20px;background:#F5A623;color:#0D2B5E;border:none;border-radius:10px;padding:10px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;z-index:200;}
+.nav-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;background:#FDFCF9;border-bottom:1px solid #E2DDD4;position:sticky;top:0;z-index:100;}
+.nav-back{background:#F5F3EE;border:1px solid #E2DDD4;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;color:#5A5650;display:flex;align-items:center;gap:6px;font-family:inherit;}
+.nav-back:hover{background:#E2DDD4;}
+.nav-back svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.nav-home{background:#E6F1FB;border-color:#B5D4F4;color:#0D2B5E;}
+.nav-title{font-size:14px;font-weight:700;color:#0D2B5E;}
+.nav-sub{font-size:11px;color:#8A8580;}
+.nav-install{margin-left:auto;background:#F5A623;color:#0D2B5E;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;}
+.nav-install svg{width:16px;height:16px;fill:none;stroke:#0D2B5E;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.page-wrap{max-width:1100px;margin:0 auto;padding:24px 20px;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+.kpi{background:#FDFCF9;border:1px solid #E2DDD4;border-radius:12px;padding:12px 16px;}
+.kl{font-size:11px;color:#8A8580;font-weight:600;margin-bottom:4px;}
+.kv{font-size:22px;font-weight:700;color:#0D2B5E;}
+.ku{font-size:11px;color:#8A8580;}
+.elem-intro{font-size:13px;color:#8A8580;margin-bottom:16px;}
+.elem-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+.elem-btn{background:#FDFCF9;border:1.5px solid #185FA5;border-radius:12px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.elem-btn:hover{background:#E6F1FB;transform:translateY(-2px);}
+.elem-btn:focus,.elem-btn:active{outline:none!important;box-shadow:none!important;}
+.elem-btn svg{width:28px;height:28px;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.en{font-size:12px;font-weight:700;color:#0D2B5E;}
+.res-card{background:#FDFCF9;border:1px solid #E2DDD4;border-radius:14px;padding:20px 24px;margin-bottom:16px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{font-size:11px;color:#8A8580;font-weight:700;text-align:left;padding:8px 10px;border-bottom:1.5px solid #E2DDD4;text-transform:uppercase;letter-spacing:0.04em;}
+td{padding:9px 10px;border-bottom:1px solid #F0EDE6;color:#0D2B5E;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+.tf td{font-weight:700;background:#EAF0F8;font-size:13px;}
+.empty-msg{text-align:center;color:#8A8580;padding:28px;font-size:13px;}
+.del-btn{background:none;border:none;cursor:pointer;color:#8A8580;font-size:15px;padding:2px 6px;border-radius:5px;}
+.del-btn:hover{color:#A32D2D;background:#FCEBEB;}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 20px;}
+.form-card{background:#FDFCF9;border:1px solid #E2DDD4;border-radius:14px;padding:20px 24px;margin-bottom:16px;}
+.form-title{font-size:13px;font-weight:700;color:#185FA5;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:16px;}
+.form-section{margin-bottom:18px;}
+.form-section-lbl{font-size:11px;font-weight:700;color:#8A8580;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #F0EDE6;}
+.fg{display:grid;gap:12px;align-items:end;margin-bottom:12px;}
+.fg label{font-size:11px;color:#5A5650;display:block;margin-bottom:4px;font-weight:600;}
+.fg input,.fg select,.inp{width:100%;padding:10px 12px;border:1px solid #E2DDD4;border-radius:8px;font-size:13px;background:#FDFCF9;font-family:inherit;color:#0D2B5E;outline:none;}
+.fg input:focus,.fg select:focus{border-color:#185FA5;}
+.hint{font-size:11px;color:#8A8580;margin-top:4px;font-style:italic;}
+.preview-box{background:#EAF0F8;border-radius:10px;padding:14px 16px;margin-top:12px;display:none;}
+.preview-box.show{display:block;}
+.preview-title{font-size:11px;font-weight:700;color:#185FA5;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;}
+.pv{background:#FDFCF9;border-radius:8px;padding:10px 12px;}
+.pv .pl{font-size:10px;color:#8A8580;font-weight:600;margin-bottom:2px;}
+.pv .pv2{font-size:16px;font-weight:700;color:#0D2B5E;}
+.pv .pu{font-size:10px;color:#8A8580;}
+.btn-calc{background:#0D2B5E;color:#FDFCF9;border:none;border-radius:10px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-calc:hover{background:#0A2248;}
+.btn-add-res{background:#185FA5;color:#FDFCF9;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:none;}
+.btn-add-res.show{display:inline-flex;align-items:center;gap:6px;}
+.btn-add-res:hover{background:#0D2B5E;}
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;}
+.acero-opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.acero-opt{padding:6px 14px;border-radius:99px;border:1.5px solid #E2DDD4;background:#FDFCF9;font-size:12px;font-weight:600;cursor:pointer;color:#5A5650;}
+.acero-opt.sel{background:#0D2B5E;color:#FDFCF9;border-color:#0D2B5E;}
+@media print{.no-print{display:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div id="pg-portada" class="page active">
+  <button class="portada-install no-print" onclick="pwaInstall()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D2B5E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v13M7 11l5 5 5-5"/><rect x="3" y="18" width="18" height="3" rx="1.5"/></svg>
+    Instalar App
+  </button>
+  <div class="logo-ring">
+    <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 10h1m4 0h1M9 14h1m4 0h1"/></svg>
+  </div>
+  <div class="app-nombre">ObraControl AI</div>
+  <div class="app-sub">Cuantificador inteligente de acero<br>Secciones · Tipo de acero · Separaciones</div>
+  <button class="btn-iniciar" onclick="irA('pg-elementos')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FDFCF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    Iniciar cuantificacion
+  </button>
+  <div class="ver">v1.0 · ACI 318 · fy=4200 kg/cm2</div>
+</div>
+
+<!-- ELEMENTOS -->
+<div id="pg-elementos" class="page">
+  <div class="nav-bar no-print">
+    <button class="nav-back nav-home" onclick="irA('pg-portada')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
+    </button>
+    <div><div class="nav-title">Seleccione el elemento estructural</div><div class="nav-sub">14 elementos disponibles</div></div>
+    <button class="nav-install no-print" onclick="pwaInstall()">
+      <svg viewBox="0 0 24 24"><path d="M12 2v13M7 11l5 5 5-5"/><rect x="3" y="18" width="18" height="3" rx="1.5"/></svg>
+      Instalar App
+    </button>
+  </div>
+  <div class="page-wrap">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kl">Total elementos</div><div class="kv" id="k-elem">0</div><div class="ku">cuantificados</div></div>
+      <div class="kpi"><div class="kl">Total barras</div><div class="kv" id="k-barras">0</div><div class="ku">unidades</div></div>
+      <div class="kpi"><div class="kl">Longitud total</div><div class="kv" id="k-long">0.00</div><div class="ku">metros lineales</div></div>
+      <div class="kpi"><div class="kl">Total quintales</div><div class="kv" id="k-qq">0.000</div><div class="ku">qq (45.36 kg)</div></div>
+    </div>
+    <div class="elem-intro">Toque el elemento. Solo ingresa secciones, tipo de acero y separaciones.</div>
+    <div class="elem-grid">
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('zap')"><svg stroke="#27500A" viewBox="0 0 24 24"><rect x="2" y="14" width="20" height="6" rx="2"/><rect x="6" y="8" width="12" height="6" rx="1"/><line x1="8" y1="8" x2="8" y2="14"/><line x1="16" y1="8" x2="16" y2="14"/></svg><div class="en">Zapata aislada 1 cama</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('zap2')"><svg stroke="#27500A" viewBox="0 0 24 24"><rect x="2" y="15" width="20" height="5" rx="2"/><rect x="5" y="9" width="14" height="6" rx="1"/><line x1="7" y1="9" x2="7" y2="15"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="17" y1="9" x2="17" y2="15"/><line x1="5" y1="12" x2="19" y2="12"/></svg><div class="en">Zapata aislada 2 camas</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('zapc4')"><svg stroke="#27500A" viewBox="0 0 24 24"><rect x="2" y="16" width="20" height="5" rx="2"/><rect x="2" y="10" width="20" height="6" rx="1"/><line x1="2" y1="13" x2="22" y2="13"/><line x1="6" y1="10" x2="6" y2="16"/><line x1="10" y1="10" x2="10" y2="16"/><line x1="14" y1="10" x2="14" y2="16"/><line x1="18" y1="10" x2="18" y2="16"/></svg><div class="en">Zapata muro Block 4"</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('zapc6')"><svg stroke="#27500A" viewBox="0 0 24 24"><rect x="2" y="16" width="20" height="5" rx="2"/><rect x="2" y="10" width="20" height="6" rx="1"/><line x1="2" y1="13" x2="22" y2="13"/><line x1="6" y1="10" x2="6" y2="16"/><line x1="10" y1="10" x2="10" y2="16"/><line x1="14" y1="10" x2="14" y2="16"/><line x1="18" y1="10" x2="18" y2="16"/></svg><div class="en">Zapata muro Block 6"</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('zapc8')"><svg stroke="#27500A" viewBox="0 0 24 24"><rect x="2" y="16" width="20" height="5" rx="2"/><rect x="2" y="10" width="20" height="6" rx="1"/><line x1="2" y1="13" x2="22" y2="13"/><line x1="6" y1="10" x2="6" y2="16"/><line x1="10" y1="10" x2="10" y2="16"/><line x1="14" y1="10" x2="14" y2="16"/><line x1="18" y1="10" x2="18" y2="16"/></svg><div class="en">Zapata muro Block 8"</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('vcim')"><svg stroke="#0C447C" viewBox="0 0 24 24"><rect x="2" y="10" width="20" height="8" rx="2"/><line x1="6" y1="10" x2="6" y2="18"/><line x1="10" y1="10" x2="10" y2="18"/><line x1="14" y1="10" x2="14" y2="18"/><line x1="18" y1="10" x2="18" y2="18"/></svg><div class="en">Viga cimentacion</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('col')"><svg stroke="#A32D2D" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg><div class="en">Columna simple</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('colc')"><svg stroke="#A32D2D" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="7" y1="6" x2="17" y2="6"/><line x1="7" y1="10" x2="17" y2="10"/><line x1="7" y1="14" x2="17" y2="14"/><line x1="7" y1="18" x2="17" y2="18"/><circle cx="9" cy="4" r="1.2" fill="#A32D2D"/><circle cx="15" cy="4" r="1.2" fill="#A32D2D"/></svg><div class="en">Columna combinada</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('vig')"><svg stroke="#534AB7" viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="8" rx="2"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/><line x1="14" y1="8" x2="14" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/></svg><div class="en">Viga simple</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('vigc')"><svg stroke="#534AB7" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><line x1="6" y1="7" x2="6" y2="17"/><line x1="10" y1="7" x2="10" y2="17"/><line x1="14" y1="7" x2="14" y2="17"/><line x1="18" y1="7" x2="18" y2="17"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="2" y1="14" x2="22" y2="14"/></svg><div class="en">Viga combinada</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('los')"><svg stroke="#633806" viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="8" rx="1"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="7" y1="8" x2="7" y2="16"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="17" y1="8" x2="17" y2="16"/></svg><div class="en">Losa maciza</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('vam')"><svg stroke="#0F6E56" viewBox="0 0 24 24"><rect x="2" y="11" width="20" height="6" rx="2"/><line x1="5" y1="11" x2="5" y2="17"/><line x1="9" y1="11" x2="9" y2="17"/><line x1="13" y1="11" x2="13" y2="17"/><line x1="17" y1="11" x2="17" y2="17"/></svg><div class="en">Viga de amarre</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('esc')"><svg stroke="#854F0B" viewBox="0 0 24 24"><polyline points="3 20 3 14 8 14 8 10 13 10 13 6 18 6 18 4"/><line x1="3" y1="20" x2="21" y2="20"/></svg><div class="en">Escalera</div></button>
+      <button type="button" class="elem-btn" tabindex="-1" onclick="goElem('ajust')" style="background:#E6F1FB;"><svg stroke="#0C447C" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><div class="en">Ajustero</div></button>
+    </div>
+    <div class="res-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:14px;font-weight:700;color:#0D2B5E;">Resumen de cuantificacion</div>
+        <button type="button" class="btn-calc no-print" onclick="window.print()" style="background:#8A8580;padding:8px 16px;font-size:12px;">Imprimir / PDF</button>
+      </div>
+      <table>
+        <thead><tr><th>Elemento</th><th>Seccion</th><th>Acero</th><th>Sep.</th><th>Cant.</th><th>Barras</th><th>Long. (m)</th><th>Quintales</th><th class="no-print"></th></tr></thead>
+        <tbody id="res-tbody"><tr><td colspan="9" class="empty-msg">Calcule elementos arriba para ver el resumen</td></tr></tbody>
+        <tfoot id="res-tfoot" style="display:none;"><tr class="tf"><td colspan="5">TOTALES</td><td id="tf-barras">0</td><td id="tf-long">0.00</td><td id="tf-qq">0.000 qq</td><td class="no-print"></td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULO -->
+<div id="pg-calc" class="page">
+  <div class="nav-bar no-print">
+    <button class="nav-back" onclick="irA('pg-elementos')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Elementos</button>
+    <button class="nav-back nav-home" onclick="irA('pg-portada')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio</button>
+    <div><div class="nav-title" id="calc-title">Calcular</div><div class="nav-sub">Ingrese datos y presione Calcular</div></div>
+    <button class="nav-install no-print" onclick="pwaInstall()"><svg viewBox="0 0 24 24"><path d="M12 2v13M7 11l5 5 5-5"/><rect x="3" y="18" width="18" height="3" rx="1.5"/></svg>Instalar App</button>
+  </div>
+  <div class="wrap"><div id="form-dinamico"></div></div>
+</div>
+
+<!-- PANEL INSTALAR -->
+<div id="pwa-guide" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#FDFCF9;border-radius:16px;padding:28px;max-width:400px;width:100%;font-family:system-ui,sans-serif;">
+    <div style="font-size:17px;font-weight:700;color:#0D2B5E;margin-bottom:16px;">Instalar ObraControl AI</div>
+    <div style="background:#EAF0F8;border-radius:10px;padding:13px;margin-bottom:10px;"><div style="font-size:12px;font-weight:700;color:#0D2B5E;margin-bottom:5px;">PC / Mac - Chrome o Edge</div><div style="font-size:12px;color:#5A5650;line-height:1.8;">1. Barra de direccion, icono instalar a la derecha<br>2. Clic en Instalar</div></div>
+    <div style="background:#EAF0F8;border-radius:10px;padding:13px;margin-bottom:10px;"><div style="font-size:12px;font-weight:700;color:#0D2B5E;margin-bottom:5px;">iPhone / iPad - Safari</div><div style="font-size:12px;color:#5A5650;line-height:1.8;">1. Boton compartir abajo<br>2. Anadir a pantalla de inicio</div></div>
+    <div style="background:#EAF0F8;border-radius:10px;padding:13px;margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#0D2B5E;margin-bottom:5px;">Android - Chrome</div><div style="font-size:12px;color:#5A5650;line-height:1.8;">1. Menu arriba derecha<br>2. Anadir a pantalla de inicio</div></div>
+    <button onclick="document.getElementById('pwa-guide').style.display='none'" style="width:100%;background:#0D2B5E;color:#FDFCF9;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Entendido</button>
+  </div>
+</div>
+
+<script>
+const QQ=45.36;
+const KGM={"3/8":0.248,"1/2":0.994,"5/8":1.552,"3/4":2.235,"1\"":3.973};
+const DIAMS=["3/8","1/2","5/8","3/4","1\""];
+const DNOM={"3/8":"O3/8","1/2":"O1/2","5/8":"O5/8","3/4":"O3/4","1\"":"O1"};
+const DIAM_M={"3/8":0.0095,"1/2":0.0127,"5/8":0.0159,"3/4":0.0191,"1\"":0.0254};
+const REC=0.075;
+var resultados=[];
+
+function irA(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goElem(key){
+  var n={zap:'Zapata aislada 1 cama',zap2:'Zapata aislada 2 camas',
+    zapc4:'Zapata muro Block 4"',zapc6:'Zapata muro Block 6"',zapc8:'Zapata muro Block 8"',
+    vcim:'Viga de cimentacion',col:'Columna simple',colc:'Columna combinada',
+    vig:'Viga simple',vigc:'Viga combinada',los:'Losa maciza',
+    vam:'Viga de amarre',esc:'Escalera',ajust:'Ajustero'};
+  document.getElementById('calc-title').textContent=n[key]||key;
+  document.getElementById('form-dinamico').innerHTML=getForm(key);
+  irA('pg-calc');
+}
+var _pwaP=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_pwaP=e;});
+function pwaInstall(){
+  if(_pwaP){_pwaP.prompt();_pwaP.userChoice.then(function(){_pwaP=null;});}
+  else{var g=document.getElementById('pwa-guide');g.style.display=g.style.display==='flex'?'none':'flex';}
+}
+if('serviceWorker' in navigator){
+  var sw="self.addEventListener('install',function(e){self.skipWaiting();});self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request).catch(function(){return new Response('');}));});";
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(function(){});
+}
+document.addEventListener('mousedown',function(e){if(e.target&&e.target.blur)e.target.blur();});
+
+function AS(id){
+  var h='<div class="acero-opts" id="'+id+'">';
+  DIAMS.forEach(function(d){h+='<button type="button" class="acero-opt'+(d==='1/2'?' sel':'')+'" onclick="sA(\''+id+'\',\''+d+'\')">'+DNOM[d]+'</button>';});
+  return h+'</div>';
+}
+function sA(gid,d){
+  document.querySelectorAll('#'+gid+' .acero-opt').forEach(function(b){b.classList.remove('sel');if(b.textContent.trim()===DNOM[d])b.classList.add('sel');});
+}
+function gA(gid){
+  var s=document.querySelector('#'+gid+' .acero-opt.sel');
+  return s?DIAMS.find(function(d){return DNOM[d]===s.textContent.trim();})||'1/2':'1/2';
+}
+
+function getForm(key){
+  if(key==='zap') return fZap();
+  if(key==='zap2') return fZap2();
+  if(key==='zapc4') return fZapcBlk('4','0.20','0.30');
+  if(key==='zapc6') return fZapcBlk('6','0.20','0.30');
+  if(key==='zapc8') return fZapcBlk('8','0.25','0.35');
+  if(key==='vcim') return fVigaBase('vcim','Viga de cimentacion');
+  if(key==='col') return fCol();
+  if(key==='colc') return fColC();
+  if(key==='vig') return fVigaBase('vig','Viga simple');
+  if(key==='vigc') return fVigC();
+  if(key==='los') return fLos();
+  if(key==='vam') return fVigaBase('vam','Viga de amarre');
+  if(key==='esc') return fEsc();
+  if(key==='ajust') return fAjust();
+  return '<div style="padding:2rem;text-align:center;color:#8A8580;">Elemento no encontrado</div>';
+}
+
+// ZAPATA 1 CAMA
+function fZap(){
+  return '<div class="form-card"><div class="form-title">Zapata aislada 1 cama para columnas</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Dimensiones</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Largo L (m)</label><input type="number" id="zap-L" class="inp" min="0.3" step="0.05" placeholder="1.50"></div>'
+  +'<div><label>Ancho B (m)</label><input type="number" id="zap-B" class="inp" min="0.3" step="0.05" placeholder="1.50"></div>'
+  +'<div><label>Alto H (m)</label><input type="number" id="zap-H" class="inp" min="0.2" step="0.05" placeholder="0.40"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="zap-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div><div class="hint">Recubrimiento 7.5 cm automatico</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero direccion X</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('zap-dx')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="zap-sx" class="inp" min="0.05" step="0.05" value="0.15"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero direccion Y</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('zap-dy')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="zap-sy" class="inp" min="0.05" step="0.05" value="0.15"></div>'
+  +'</div></div>'
+  +'<div id="zap-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cZap()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-zap" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cZap(){
+  var L=parseFloat(document.getElementById('zap-L').value)||0,B=parseFloat(document.getElementById('zap-B').value)||0,N=parseInt(document.getElementById('zap-N').value)||1;
+  var sx=parseFloat(document.getElementById('zap-sx').value)||0.15,sy=parseFloat(document.getElementById('zap-sy').value)||0.15;
+  var dx=gA('zap-dx'),dy=gA('zap-dy');
+  if(!L||!B){alert('Ingrese largo y ancho.');return;}
+  var lx=B-2*REC,ly=L-2*REC,nx=Math.floor((L-2*REC)/sx)+1,ny=Math.floor((B-2*REC)/sy)+1;
+  var qX=(KGM[dx]*lx*nx*N)/QQ,qY=(KGM[dy]*ly*ny*N)/QQ,qT=qX+qY;
+  window._lc={elem:'Zapata aislada 1 cama',tipo:'zap',seccion:L.toFixed(2)+'x'+B.toFixed(2)+' m',detalle:[{dir:'X',diam:dx,sep:sx,n:nx,lBarra:lx,nElem:N},{dir:'Y',diam:dy,sep:sy,n:ny,lBarra:ly,nElem:N}],totalBarras:(nx+ny)*N,longTotal:(nx*lx+ny*ly)*N,qq:qT,N:N};
+  var p=document.getElementById('zap-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Zapata 1 cama '+L.toFixed(2)+'x'+B.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Dir. X '+DNOM[dx]+' @ '+(sx*100).toFixed(0)+'cm</div><div class="pv2">'+nx+' barras</div><div class="pu">'+lx.toFixed(2)+' m</div></div>'
+  +'<div class="pv"><div class="pl">Dir. Y '+DNOM[dy]+' @ '+(sy*100).toFixed(0)+'cm</div><div class="pv2">'+ny+' barras</div><div class="pu">'+ly.toFixed(2)+' m</div></div>'
+  +'<div class="pv"><div class="pl">Total barras (x'+N+')</div><div class="pv2">'+(nx+ny)*N+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-zap').className='btn-add-res show';
+}
+
+// ZAPATA 2 CAMAS
+function fZap2(){
+  return '<div class="form-card"><div class="form-title">Zapata aislada 2 camas para columnas</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Dimensiones</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Largo L (m)</label><input type="number" id="z2-L" class="inp" min="0.3" step="0.05" placeholder="1.80"></div>'
+  +'<div><label>Ancho B (m)</label><input type="number" id="z2-B" class="inp" min="0.3" step="0.05" placeholder="1.80"></div>'
+  +'<div><label>Alto H (m)</label><input type="number" id="z2-H" class="inp" min="0.2" step="0.05" placeholder="0.60"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="z2-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Cama inferior X e Y</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Diam. X inf.</label>'+AS('z2-dxi')+'</div><div><label>Sep. X (m)</label><input type="number" id="z2-sxi" class="inp" value="0.15"></div>'
+  +'<div><label>Diam. Y inf.</label>'+AS('z2-dyi')+'</div><div><label>Sep. Y (m)</label><input type="number" id="z2-syi" class="inp" value="0.15"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Cama superior X e Y</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Diam. X sup.</label>'+AS('z2-dxs')+'</div><div><label>Sep. X (m)</label><input type="number" id="z2-sxs" class="inp" value="0.20"></div>'
+  +'<div><label>Diam. Y sup.</label>'+AS('z2-dys')+'</div><div><label>Sep. Y (m)</label><input type="number" id="z2-sys" class="inp" value="0.20"></div>'
+  +'</div></div>'
+  +'<div id="z2-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cZap2()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-z2" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cZap2(){
+  var L=parseFloat(document.getElementById('z2-L').value)||0,B=parseFloat(document.getElementById('z2-B').value)||0,N=parseInt(document.getElementById('z2-N').value)||1;
+  if(!L||!B){alert('Ingrese largo y ancho.');return;}
+  var sxi=parseFloat(document.getElementById('z2-sxi').value)||0.15,syi=parseFloat(document.getElementById('z2-syi').value)||0.15;
+  var sxs=parseFloat(document.getElementById('z2-sxs').value)||0.20,sys=parseFloat(document.getElementById('z2-sys').value)||0.20;
+  var dxi=gA('z2-dxi'),dyi=gA('z2-dyi'),dxs=gA('z2-dxs'),dys=gA('z2-dys');
+  var nXi=Math.floor((B-2*REC)/sxi)+1,lXi=L-2*REC,nYi=Math.floor((L-2*REC)/syi)+1,lYi=B-2*REC;
+  var nXs=Math.floor((B-2*REC)/sxs)+1,lXs=L-2*REC,nYs=Math.floor((L-2*REC)/sys)+1,lYs=B-2*REC;
+  var qT=((KGM[dxi]*lXi*nXi+KGM[dyi]*lYi*nYi+KGM[dxs]*lXs*nXs+KGM[dys]*lYs*nYs)*N)/QQ;
+  window._lc={elem:'Zapata aislada 2 camas',tipo:'zap2',seccion:L.toFixed(2)+'x'+B.toFixed(2)+' m',detalle:[{dir:'Inf.X',diam:dxi,sep:sxi,n:nXi,lBarra:lXi,nElem:N},{dir:'Inf.Y',diam:dyi,sep:syi,n:nYi,lBarra:lYi,nElem:N},{dir:'Sup.X',diam:dxs,sep:sxs,n:nXs,lBarra:lXs,nElem:N},{dir:'Sup.Y',diam:dys,sep:sys,n:nYs,lBarra:lYs,nElem:N}],totalBarras:(nXi+nYi+nXs+nYs)*N,longTotal:(nXi*lXi+nYi*lYi+nXs*lXs+nYs*lYs)*N,qq:qT,N:N};
+  var p=document.getElementById('z2-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Zapata 2 camas '+L.toFixed(2)+'x'+B.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Inf. X</div><div class="pv2">'+nXi+' barras</div></div>'
+  +'<div class="pv"><div class="pl">Inf. Y</div><div class="pv2">'+nYi+' barras</div></div>'
+  +'<div class="pv"><div class="pl">Sup. X</div><div class="pv2">'+nXs+' barras</div></div>'
+  +'<div class="pv"><div class="pl">Sup. Y</div><div class="pv2">'+nYs+' barras</div></div>'
+  +'<div class="pv"><div class="pl">Total (x'+N+')</div><div class="pv2">'+(nXi+nYi+nXs+nYs)*N+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-z2').className='btn-add-res show';
+}
+
+// ZAPATA CORRIDA MUROS DE BLOCK
+function fZapcBlk(blk,bdef,hdef){
+  return '<div class="form-card"><div class="form-title">Zapata corrida Muro Block '+blk+'" - Acero Long. + Estribo</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Dimensiones</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Largo total (m)</label><input type="number" id="zb-l" class="inp" min="0.5" step="0.1" placeholder="12.00"></div>'
+  +'<div><label>Base b (m)</label><input type="number" id="zb-b" class="inp" min="0.15" step="0.05" value="'+bdef+'"></div>'
+  +'<div><label>Alto h (m)</label><input type="number" id="zb-h" class="inp" min="0.15" step="0.05" value="'+hdef+'"></div>'
+  +'<div><label>Cantidad tramos</label><input type="number" id="zb-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div><div class="hint">Block '+blk+'" - base minima recomendada '+bdef+' m</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero Long. (longitudinal)</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro Acero Long.</label>'+AS('zb-dl')+'</div>'
+  +'<div><label>Cantidad barras long.</label><input type="number" id="zb-nlong" class="inp" min="2" step="1" value="3">'
+  +'<div class="hint">Min. 3 barras</div></div></div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero de Estribo (transversal)</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro Estribo</label>'+AS('zb-de')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="zb-se" class="inp" min="0.10" step="0.05" value="0.20">'
+  +'<div class="hint">Long. estribo = 2(b+h) - recubrimientos</div></div></div></div>'
+  +'<div id="zb-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cZapcBlk(\''+blk+'\')">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-zb" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cZapcBlk(blk){
+  var l=parseFloat(document.getElementById('zb-l').value)||0;
+  var b=parseFloat(document.getElementById('zb-b').value)||0;
+  var h=parseFloat(document.getElementById('zb-h').value)||0;
+  var N=parseInt(document.getElementById('zb-N').value)||1;
+  var nlong=parseInt(document.getElementById('zb-nlong').value)||3;
+  var se=parseFloat(document.getElementById('zb-se').value)||0.20;
+  var dl=gA('zb-dl'),de=gA('zb-de');
+  if(!l||!b||!h){alert('Complete largo, base y alto.');return;}
+  var lL=l-2*REC,pE=2*(b-2*REC)+2*(h-2*REC)+0.20,nE=Math.floor((l-2*REC)/se)+1;
+  var qL=(KGM[dl]*lL*nlong*N)/QQ,qE=(KGM[de]*pE*nE*N)/QQ,qT=qL+qE;
+  window._lc={elem:'Zapata muro Block '+blk+'"',tipo:'zapc'+blk,seccion:b.toFixed(2)+'x'+h.toFixed(2)+' L='+l.toFixed(2)+'m',
+    detalle:[{dir:'Acero Long.',diam:dl,sep:'--',n:nlong,lBarra:lL,nElem:N},{dir:'Estribo',diam:de,sep:se,n:nE,lBarra:pE,nElem:N}],
+    totalBarras:(nlong+nE)*N,longTotal:(nlong*lL+nE*pE)*N,qq:qT,N:N};
+  var p=document.getElementById('zb-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Zapata muro Block '+blk+'" - '+b.toFixed(2)+'x'+h.toFixed(2)+' L='+l.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Acero Long. '+DNOM[dl]+'</div><div class="pv2">'+nlong+' barras</div><div class="pu">'+lL.toFixed(2)+' m - '+qL.toFixed(3)+' qq</div></div>'
+  +'<div class="pv"><div class="pl">Estribo '+DNOM[de]+' @ '+(se*100).toFixed(0)+'cm</div><div class="pv2">'+nE+' estribos</div><div class="pu">'+pE.toFixed(2)+' m - '+qE.toFixed(3)+' qq</div></div>'
+  +'<div class="pv"><div class="pl">Total barras (x'+N+')</div><div class="pv2">'+(nlong+nE)*N+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales totales</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-zb').className='btn-add-res show';
+}
+
+// VIGA BASE (cimentacion, simple, amarre)
+function fVigaBase(key,titulo){
+  return '<div class="form-card"><div class="form-title">'+titulo+' - Longitudinal + Estribos</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Seccion y longitud</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Base b (m)</label><input type="number" id="'+key+'-b" class="inp" min="0.1" step="0.05" placeholder="0.30"></div>'
+  +'<div><label>Alto h (m)</label><input type="number" id="'+key+'-h" class="inp" min="0.1" step="0.05" placeholder="0.40"></div>'
+  +'<div><label>Longitud (m)</label><input type="number" id="'+key+'-l" class="inp" min="0.5" step="0.1" placeholder="5.00"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="'+key+'-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero longitudinal</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS(key+'-dl')+'</div>'
+  +'<div><label>Cantidad barras</label><input type="number" id="'+key+'-nlong" class="inp" min="2" step="1" value="4"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Estribos</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro estribo</label>'+AS(key+'-de')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="'+key+'-se" class="inp" min="0.05" step="0.05" value="0.20"></div>'
+  +'</div></div>'
+  +'<div id="'+key+'-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cViga(\''+key+'\',\''+titulo+'\')">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-'+key+'" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cViga(key,titulo){
+  var b=parseFloat(document.getElementById(key+'-b').value)||0,h=parseFloat(document.getElementById(key+'-h').value)||0,l=parseFloat(document.getElementById(key+'-l').value)||0,N=parseInt(document.getElementById(key+'-N').value)||1;
+  var nl=parseInt(document.getElementById(key+'-nlong').value)||4,se=parseFloat(document.getElementById(key+'-se').value)||0.20;
+  var dl=gA(key+'-dl'),de=gA(key+'-de');
+  if(!b||!h||!l){alert('Complete base, alto y longitud.');return;}
+  var lL=l-2*REC,nE=Math.floor((l-2*REC)/se)+1,pE=2*(b-2*REC)+2*(h-2*REC)+0.20;
+  var qL=(KGM[dl]*lL*nl*N)/QQ,qE=(KGM[de]*pE*nE*N)/QQ,qT=qL+qE;
+  window._lc={elem:titulo,tipo:key,seccion:b.toFixed(2)+'x'+h.toFixed(2)+' L='+l.toFixed(2)+'m',detalle:[{dir:'Long.',diam:dl,sep:'--',n:nl,lBarra:lL,nElem:N},{dir:'Estribos',diam:de,sep:se,n:nE,lBarra:pE,nElem:N}],totalBarras:(nl+nE)*N,longTotal:(nl*lL+nE*pE)*N,qq:qT,N:N};
+  var p=document.getElementById(key+'-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">'+titulo+'</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Long. '+DNOM[dl]+'</div><div class="pv2">'+nl+' barras</div><div class="pu">'+lL.toFixed(2)+' m</div></div>'
+  +'<div class="pv"><div class="pl">Estribos '+DNOM[de]+' @ '+(se*100).toFixed(0)+'cm</div><div class="pv2">'+nE+'</div></div>'
+  +'<div class="pv"><div class="pl">Total (x'+N+')</div><div class="pv2">'+(nl+nE)*N+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-'+key).className='btn-add-res show';
+}
+
+// COLUMNA SIMPLE
+function fCol(){
+  return '<div class="form-card"><div class="form-title">Columna rectangular - Longitudinal + Estribos</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Seccion y altura</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Lado a (m)</label><input type="number" id="col-a" class="inp" min="0.15" step="0.05" placeholder="0.30"></div>'
+  +'<div><label>Lado b (m)</label><input type="number" id="col-b" class="inp" min="0.15" step="0.05" placeholder="0.30"></div>'
+  +'<div><label>Altura libre (m)</label><input type="number" id="col-h" class="inp" min="0.5" step="0.1" placeholder="2.80"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="col-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div><div class="hint">Traslape = 40 diametros, calculado automatico</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero longitudinal</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('col-dl')+'</div>'
+  +'<div><label>Cantidad barras</label><input type="number" id="col-nlong" class="inp" min="4" step="1" value="4"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Estribos</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro estribo</label>'+AS('col-de')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="col-se" class="inp" min="0.05" step="0.05" value="0.15"></div>'
+  +'</div></div>'
+  +'<div id="col-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cCol()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-col" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cCol(){
+  var a=parseFloat(document.getElementById('col-a').value)||0,b=parseFloat(document.getElementById('col-b').value)||0,h=parseFloat(document.getElementById('col-h').value)||0,N=parseInt(document.getElementById('col-N').value)||1;
+  var nl=parseInt(document.getElementById('col-nlong').value)||4,se=parseFloat(document.getElementById('col-se').value)||0.15;
+  var dl=gA('col-dl'),de=gA('col-de');
+  if(!a||!b||!h){alert('Complete dimensiones.');return;}
+  var tr=40*DIAM_M[dl],lL=h+tr,nE=Math.floor((h-2*REC)/se)+1,pE=2*(a-2*REC)+2*(b-2*REC)+0.20;
+  var qL=(KGM[dl]*lL*nl*N)/QQ,qE=(KGM[de]*pE*nE*N)/QQ,qT=qL+qE;
+  window._lc={elem:'Columna simple',tipo:'col',seccion:a.toFixed(2)+'x'+b.toFixed(2)+' H='+h.toFixed(2)+'m',detalle:[{dir:'Long.',diam:dl,sep:'--',n:nl,lBarra:lL,nElem:N},{dir:'Estribos',diam:de,sep:se,n:nE,lBarra:pE,nElem:N}],totalBarras:(nl+nE)*N,longTotal:(nl*lL+nE*pE)*N,qq:qT,N:N};
+  var p=document.getElementById('col-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Columna '+a.toFixed(2)+'x'+b.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Long. '+DNOM[dl]+' (traslape '+(tr*100).toFixed(0)+'cm)</div><div class="pv2">'+nl+' barras</div><div class="pu">'+lL.toFixed(2)+' m</div></div>'
+  +'<div class="pv"><div class="pl">Estribos '+DNOM[de]+' @ '+(se*100).toFixed(0)+'cm</div><div class="pv2">'+nE+'</div></div>'
+  +'<div class="pv"><div class="pl">Total (x'+N+')</div><div class="pv2">'+(nl+nE)*N+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-col').className='btn-add-res show';
+}
+
+// COLUMNA COMBINADA
+function fColC(){
+  return '<div class="form-card"><div class="form-title">Columna combinada - Multiples aceros + estribos</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Seccion y altura</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Lado a (m)</label><input type="number" id="cc-a" class="inp" min="0.15" step="0.05" placeholder="0.35"></div>'
+  +'<div><label>Lado b (m)</label><input type="number" id="cc-b" class="inp" min="0.15" step="0.05" placeholder="0.35"></div>'
+  +'<div><label>Altura libre (m)</label><input type="number" id="cc-h" class="inp" min="0.5" step="0.1" placeholder="2.80"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="cc-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Grupo 1 - Acero esquinas</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro esquinas</label>'+AS('cc-d1')+'</div>'
+  +'<div><label>Cantidad barras esquinas</label><input type="number" id="cc-n1" class="inp" min="4" step="1" value="4"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Grupo 2 - Acero caras</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro caras</label>'+AS('cc-d2')+'</div>'
+  +'<div><label>Cantidad barras caras (0 si no aplica)</label><input type="number" id="cc-n2" class="inp" min="0" step="1" value="2"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Grupo 3 - Acero adicional</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro adicional</label>'+AS('cc-d3')+'</div>'
+  +'<div><label>Cantidad barras (0 si no aplica)</label><input type="number" id="cc-n3" class="inp" min="0" step="1" value="0"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Estribo principal</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('cc-de1')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="cc-se1" class="inp" min="0.05" step="0.05" value="0.15"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Estribo secundario - zona confinamiento</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('cc-de2')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="cc-se2" class="inp" min="0.05" step="0.05" value="0.10"></div>'
+  +'</div></div>'
+  +'<div id="cc-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cColC()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-cc" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cColC(){
+  var a=parseFloat(document.getElementById('cc-a').value)||0,b=parseFloat(document.getElementById('cc-b').value)||0,h=parseFloat(document.getElementById('cc-h').value)||0,N=parseInt(document.getElementById('cc-N').value)||1;
+  var n1=parseInt(document.getElementById('cc-n1').value)||0,n2=parseInt(document.getElementById('cc-n2').value)||0,n3=parseInt(document.getElementById('cc-n3').value)||0;
+  var se1=parseFloat(document.getElementById('cc-se1').value)||0.15,se2=parseFloat(document.getElementById('cc-se2').value)||0.10;
+  var d1=gA('cc-d1'),d2=gA('cc-d2'),d3=gA('cc-d3'),de1=gA('cc-de1'),de2=gA('cc-de2');
+  if(!a||!b||!h){alert('Complete seccion y altura.');return;}
+  var lL1=h+40*DIAM_M[d1],lL2=h+40*DIAM_M[d2],lL3=h+40*DIAM_M[d3];
+  var pE=2*(a-2*REC)+2*(b-2*REC)+0.20;
+  var nE1=Math.floor((h-2*REC)/se1)+1,nE2=(Math.floor((h/4-REC)/se2)+1)*2;
+  var q1=(KGM[d1]*lL1*n1*N)/QQ,q2=n2>0?(KGM[d2]*lL2*n2*N)/QQ:0,q3=n3>0?(KGM[d3]*lL3*n3*N)/QQ:0;
+  var qE1=(KGM[de1]*pE*nE1*N)/QQ,qE2=(KGM[de2]*pE*nE2*N)/QQ,qT=q1+q2+q3+qE1+qE2;
+  window._lc={elem:'Columna combinada',tipo:'colc',seccion:a.toFixed(2)+'x'+b.toFixed(2)+' H='+h.toFixed(2)+'m',detalle:[{dir:'Esq.',diam:d1,sep:'--',n:n1,lBarra:lL1,nElem:N},{dir:'Caras',diam:d2,sep:'--',n:n2,lBarra:lL2,nElem:N},{dir:'Est.ppal',diam:de1,sep:se1,n:nE1,lBarra:pE,nElem:N},{dir:'Est.sec',diam:de2,sep:se2,n:nE2,lBarra:pE,nElem:N}],totalBarras:(n1+n2+n3+nE1+nE2)*N,longTotal:((n1*lL1)+(n2*lL2)+(n3*lL3)+(nE1+nE2)*pE)*N,qq:qT,N:N};
+  var p=document.getElementById('cc-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Columna combinada '+a.toFixed(2)+'x'+b.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Esquinas '+DNOM[d1]+'</div><div class="pv2">'+n1+'</div><div class="pu">barras - '+q1.toFixed(3)+' qq</div></div>'
+  +(n2>0?'<div class="pv"><div class="pl">Caras '+DNOM[d2]+'</div><div class="pv2">'+n2+'</div><div class="pu">barras - '+q2.toFixed(3)+' qq</div></div>':'')
+  +(n3>0?'<div class="pv"><div class="pl">Adicional '+DNOM[d3]+'</div><div class="pv2">'+n3+'</div><div class="pu">barras - '+q3.toFixed(3)+' qq</div></div>':'')
+  +'<div class="pv"><div class="pl">Est.ppal '+DNOM[de1]+'</div><div class="pv2">'+nE1+'</div><div class="pu">'+qE1.toFixed(3)+' qq</div></div>'
+  +'<div class="pv"><div class="pl">Est.sec '+DNOM[de2]+'</div><div class="pv2">'+nE2+'</div><div class="pu">'+qE2.toFixed(3)+' qq</div></div>'
+  +'<div class="pv"><div class="pl">Quintales totales (x'+N+')</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-cc').className='btn-add-res show';
+}
+
+// VIGA COMBINADA
+function fVigC(){
+  return '<div class="form-card"><div class="form-title">Viga combinada - Cama baja + alta + piel + estribos</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Seccion y longitud</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Base b (m)</label><input type="number" id="vc-b" class="inp" min="0.15" step="0.05" placeholder="0.30"></div>'
+  +'<div><label>Alto h (m)</label><input type="number" id="vc-h" class="inp" min="0.2" step="0.05" placeholder="0.50"></div>'
+  +'<div><label>Longitud (m)</label><input type="number" id="vc-l" class="inp" min="0.5" step="0.1" placeholder="5.00"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="vc-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Cama baja (traccion)</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro cama baja</label>'+AS('vc-d1')+'</div>'
+  +'<div><label>Cantidad barras</label><input type="number" id="vc-n1" class="inp" min="2" step="1" value="3"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Cama alta (compresion)</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro cama alta</label>'+AS('vc-d2')+'</div>'
+  +'<div><label>Cantidad barras</label><input type="number" id="vc-n2" class="inp" min="2" step="1" value="2"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero de piel (h > 0.60m, si aplica)</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro piel</label>'+AS('vc-d3')+'</div>'
+  +'<div><label>Cantidad barras piel (0 si no aplica)</label><input type="number" id="vc-n3" class="inp" min="0" step="1" value="0"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Estribo principal - zona central</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('vc-de1')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="vc-se1" class="inp" min="0.05" step="0.05" value="0.20"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Estribo secundario - extremos confinamiento L/4</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('vc-de2')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="vc-se2" class="inp" min="0.05" step="0.05" value="0.10"></div>'
+  +'</div></div>'
+  +'<div id="vc-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cVigC()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-vc" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cVigC(){
+  var b=parseFloat(document.getElementById('vc-b').value)||0,h=parseFloat(document.getElementById('vc-h').value)||0,l=parseFloat(document.getElementById('vc-l').value)||0,N=parseInt(document.getElementById('vc-N').value)||1;
+  var n1=parseInt(document.getElementById('vc-n1').value)||0,n2=parseInt(document.getElementById('vc-n2').value)||0,n3=parseInt(document.getElementById('vc-n3').value)||0;
+  var se1=parseFloat(document.getElementById('vc-se1').value)||0.20,se2=parseFloat(document.getElementById('vc-se2').value)||0.10;
+  var d1=gA('vc-d1'),d2=gA('vc-d2'),d3=gA('vc-d3'),de1=gA('vc-de1'),de2=gA('vc-de2');
+  if(!b||!h||!l){alert('Complete base, alto y longitud.');return;}
+  var lL1=l-2*REC+2*(12*DIAM_M[d1]),lL2=l-2*REC+2*(12*DIAM_M[d2]),lL3=l-2*REC;
+  var pE=2*(b-2*REC)+2*(h-2*REC)+0.20,lC=l/4,lCen=l-2*lC;
+  var nE1=Math.floor((lCen-REC)/se1)+1,nE2=(Math.floor((lC-REC)/se2)+1)*2;
+  var q1=(KGM[d1]*lL1*n1*N)/QQ,q2=(KGM[d2]*lL2*n2*N)/QQ,q3=n3>0?(KGM[d3]*lL3*n3*N)/QQ:0;
+  var qE1=(KGM[de1]*pE*nE1*N)/QQ,qE2=(KGM[de2]*pE*nE2*N)/QQ,qT=q1+q2+q3+qE1+qE2;
+  window._lc={elem:'Viga combinada',tipo:'vigc',seccion:b.toFixed(2)+'x'+h.toFixed(2)+' L='+l.toFixed(2)+'m',detalle:[{dir:'C.baja',diam:d1,sep:'--',n:n1,lBarra:lL1,nElem:N},{dir:'C.alta',diam:d2,sep:'--',n:n2,lBarra:lL2,nElem:N},{dir:'Est.ppal',diam:de1,sep:se1,n:nE1,lBarra:pE,nElem:N},{dir:'Est.sec',diam:de2,sep:se2,n:nE2,lBarra:pE,nElem:N}],totalBarras:(n1+n2+n3+nE1+nE2)*N,longTotal:((n1*lL1)+(n2*lL2)+(n3*lL3)+(nE1+nE2)*pE)*N,qq:qT,N:N};
+  var p=document.getElementById('vc-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Viga combinada '+b.toFixed(2)+'x'+h.toFixed(2)+' L='+l.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Cama baja '+DNOM[d1]+'</div><div class="pv2">'+n1+'</div><div class="pu">barras</div></div>'
+  +'<div class="pv"><div class="pl">Cama alta '+DNOM[d2]+'</div><div class="pv2">'+n2+'</div><div class="pu">barras</div></div>'
+  +(n3>0?'<div class="pv"><div class="pl">Piel '+DNOM[d3]+'</div><div class="pv2">'+n3+'</div></div>':'')
+  +'<div class="pv"><div class="pl">Est.ppal central</div><div class="pv2">'+nE1+'</div></div>'
+  +'<div class="pv"><div class="pl">Est.sec extremos</div><div class="pv2">'+nE2+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales (x'+N+')</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-vc').className='btn-add-res show';
+}
+
+// LOSA MACIZA
+function fLos(){
+  return '<div class="form-card"><div class="form-title">Losa maciza - Malla bidireccional inferior + superior</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Dimensiones</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Largo (m)</label><input type="number" id="los-L" class="inp" min="1" step="0.1" placeholder="6.00"></div>'
+  +'<div><label>Ancho (m)</label><input type="number" id="los-B" class="inp" min="1" step="0.1" placeholder="4.00"></div>'
+  +'<div><label>Espesor (m)</label><input type="number" id="los-e" class="inp" min="0.08" step="0.01" placeholder="0.20"></div>'
+  +'<div><label>Cantidad panos</label><input type="number" id="los-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Cama inferior X e Y</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Diam. X inf.</label>'+AS('los-dxi')+'</div><div><label>Sep. X (m)</label><input type="number" id="los-sxi" class="inp" value="0.15"></div>'
+  +'<div><label>Diam. Y inf.</label>'+AS('los-dyi')+'</div><div><label>Sep. Y (m)</label><input type="number" id="los-syi" class="inp" value="0.15"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Cama superior X e Y</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Diam. X sup.</label>'+AS('los-dxs')+'</div><div><label>Sep. X (m)</label><input type="number" id="los-sxs" class="inp" value="0.20"></div>'
+  +'<div><label>Diam. Y sup.</label>'+AS('los-dys')+'</div><div><label>Sep. Y (m)</label><input type="number" id="los-sys" class="inp" value="0.20"></div>'
+  +'</div></div>'
+  +'<div id="los-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cLos()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-los" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cLos(){
+  var L=parseFloat(document.getElementById('los-L').value)||0,B=parseFloat(document.getElementById('los-B').value)||0,N=parseInt(document.getElementById('los-N').value)||1;
+  if(!L||!B){alert('Ingrese largo y ancho.');return;}
+  var sxi=parseFloat(document.getElementById('los-sxi').value)||0.15,syi=parseFloat(document.getElementById('los-syi').value)||0.15;
+  var sxs=parseFloat(document.getElementById('los-sxs').value)||0.20,sys=parseFloat(document.getElementById('los-sys').value)||0.20;
+  var dxi=gA('los-dxi'),dyi=gA('los-dyi'),dxs=gA('los-dxs'),dys=gA('los-dys');
+  var nXi=Math.floor((B-2*REC)/sxi)+1,lXi=L-2*REC,nYi=Math.floor((L-2*REC)/syi)+1,lYi=B-2*REC;
+  var nXs=Math.floor((B-2*REC)/sxs)+1,lXs=L-2*REC,nYs=Math.floor((L-2*REC)/sys)+1,lYs=B-2*REC;
+  var qT=((KGM[dxi]*lXi*nXi+KGM[dyi]*lYi*nYi+KGM[dxs]*lXs*nXs+KGM[dys]*lYs*nYs)*N)/QQ;
+  window._lc={elem:'Losa maciza',tipo:'los',seccion:L.toFixed(2)+'x'+B.toFixed(2)+' m',detalle:[{dir:'Inf.X',diam:dxi,sep:sxi,n:nXi,lBarra:lXi,nElem:N},{dir:'Inf.Y',diam:dyi,sep:syi,n:nYi,lBarra:lYi,nElem:N},{dir:'Sup.X',diam:dxs,sep:sxs,n:nXs,lBarra:lXs,nElem:N},{dir:'Sup.Y',diam:dys,sep:sys,n:nYs,lBarra:lYs,nElem:N}],totalBarras:(nXi+nYi+nXs+nYs)*N,longTotal:(nXi*lXi+nYi*lYi+nXs*lXs+nYs*lYs)*N,qq:qT,N:N};
+  var p=document.getElementById('los-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Losa '+L.toFixed(2)+'x'+B.toFixed(2)+'m</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Inf. X</div><div class="pv2">'+nXi+'</div></div>'
+  +'<div class="pv"><div class="pl">Inf. Y</div><div class="pv2">'+nYi+'</div></div>'
+  +'<div class="pv"><div class="pl">Sup. X</div><div class="pv2">'+nXs+'</div></div>'
+  +'<div class="pv"><div class="pl">Sup. Y</div><div class="pv2">'+nYs+'</div></div>'
+  +'<div class="pv"><div class="pl">Total (x'+N+')</div><div class="pv2">'+(nXi+nYi+nXs+nYs)*N+'</div></div>'
+  +'<div class="pv"><div class="pl">Quintales</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-los').className='btn-add-res show';
+}
+
+// ESCALERA
+function fEsc(){
+  return '<div class="form-card"><div class="form-title">Escalera - Principal + distribucion</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Dimensiones</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr 1fr 1fr;">'
+  +'<div><label>Ancho (m)</label><input type="number" id="esc-a" class="inp" min="0.8" step="0.1" placeholder="1.20"></div>'
+  +'<div><label>Long. horizontal (m)</label><input type="number" id="esc-l" class="inp" min="1" step="0.1" placeholder="3.50"></div>'
+  +'<div><label>Altura total (m)</label><input type="number" id="esc-h" class="inp" min="0.5" step="0.1" placeholder="1.50"></div>'
+  +'<div><label>Cantidad tramos</label><input type="number" id="esc-N" class="inp" min="1" step="1" value="1"></div>'
+  +'</div><div class="hint">Long. real inclinada calculada automaticamente</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero principal (longitudinal)</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('esc-dp')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="esc-sp" class="inp" min="0.1" step="0.05" value="0.15"></div>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Acero de distribucion</div>'
+  +'<div class="fg" style="grid-template-columns:1fr 1fr;">'
+  +'<div><label>Diametro</label>'+AS('esc-dd')+'</div>'
+  +'<div><label>Separacion (m)</label><input type="number" id="esc-sd" class="inp" min="0.1" step="0.05" value="0.25"></div>'
+  +'</div></div>'
+  +'<div id="esc-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cEsc()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-esc" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+function cEsc(){
+  var a=parseFloat(document.getElementById('esc-a').value)||0,l=parseFloat(document.getElementById('esc-l').value)||0,h=parseFloat(document.getElementById('esc-h').value)||0,N=parseInt(document.getElementById('esc-N').value)||1;
+  var sp=parseFloat(document.getElementById('esc-sp').value)||0.15,sd=parseFloat(document.getElementById('esc-sd').value)||0.25;
+  var dp=gA('esc-dp'),dd=gA('esc-dd');
+  if(!a||!l||!h){alert('Complete dimensiones.');return;}
+  var lR=Math.sqrt(l*l+h*h),lBP=lR+0.40,np=Math.floor((a-2*REC)/sp)+1,lBD=a-2*REC,nd=Math.floor((lR-2*REC)/sd)+1;
+  var qP=(KGM[dp]*lBP*np*N)/QQ,qD=(KGM[dd]*lBD*nd*N)/QQ,qT=qP+qD;
+  window._lc={elem:'Escalera',tipo:'esc',seccion:'A='+a.toFixed(2)+' L='+l.toFixed(2)+' H='+h.toFixed(2)+'m',detalle:[{dir:'Principal',diam:dp,sep:sp,n:np,lBarra:lBP,nElem:N},{dir:'Distribucion',diam:dd,sep:sd,n:nd,lBarra:lBD,nElem:N}],totalBarras:(np+nd)*N,longTotal:(np*lBP+nd*lBD)*N,qq:qT,N:N};
+  var p=document.getElementById('esc-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Escalera</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Long. inclinada</div><div class="pv2">'+lR.toFixed(2)+'m</div><div class="pu">+traslape='+lBP.toFixed(2)+'m</div></div>'
+  +'<div class="pv"><div class="pl">Principal '+DNOM[dp]+'</div><div class="pv2">'+np+' barras</div></div>'
+  +'<div class="pv"><div class="pl">Distribucion '+DNOM[dd]+'</div><div class="pv2">'+nd+' barras</div></div>'
+  +'<div class="pv"><div class="pl">Quintales (x'+N+')</div><div class="pv2">'+qT.toFixed(3)+'</div><div class="pu">qq</div></div></div>';
+  document.getElementById('btn-add-esc').className='btn-add-res show';
+}
+
+// AJUSTERO
+function fAjust(){
+  return '<div class="form-card"><div class="form-title">Cuantificacion para pago de ajustero</div>'
+  +'<div class="form-section"><div class="form-section-lbl">Tipo de trabajo</div>'
+  +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">'
+  +'<button type="button" class="acero-opt sel" id="ajt-acero" onclick="ajST(\'acero\')">Acero</button>'
+  +'<button type="button" class="acero-opt" id="ajt-block" onclick="ajST(\'block\')">Block</button>'
+  +'<button type="button" class="acero-opt" id="ajt-enc" onclick="ajST(\'enc\')">Encofrado</button>'
+  +'</div></div>'
+  +'<div class="form-section"><div class="form-section-lbl">Datos y precio</div>'
+  +'<div class="fg" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr;">'
+  +'<div><label>Descripcion</label><input type="text" id="aj-elem" class="inp" placeholder="Ej: Columnas C1-C8 Nivel 2"></div>'
+  +'<div><label>Dim. 1</label><input type="number" id="aj-d1" class="inp" min="0.01" step="0.01" placeholder="m"></div>'
+  +'<div><label>Dim. 2</label><input type="number" id="aj-d2" class="inp" min="0.01" step="0.01" placeholder="m"></div>'
+  +'<div><label>Cantidad</label><input type="number" id="aj-cant" class="inp" min="1" step="1" value="1"></div>'
+  +'<div><label>Precio unit. (RD$)</label><input type="number" id="aj-precio" class="inp" min="0" step="10" placeholder="RD$"></div>'
+  +'</div><div id="aj-hint" class="hint">Acero: Dim1=long.barra(m) - Dim2=cant.barras - Precio=RD$/qq</div></div>'
+  +'<div id="aj-p" class="preview-box"></div>'
+  +'<div class="btn-row"><button type="button" class="btn-calc" onclick="cAjust()">Calcular</button>'
+  +'<button type="button" class="btn-add-res" id="btn-add-ajust" onclick="addRes()">+ Agregar al resumen</button></div></div>';
+}
+var _ajT='acero';
+function ajST(t){
+  _ajT=t;
+  ['acero','block','enc'].forEach(function(x){document.getElementById('ajt-'+x).classList.remove('sel');});
+  document.getElementById('ajt-'+t).classList.add('sel');
+  var h={acero:'Acero: Dim1=long.barra(m) - Dim2=cant.barras - Precio=RD$/qq',block:'Block: Dim1=largo(m) - Dim2=alto(m) - Precio=RD$/m2',enc:'Encofrado: Dim1xDim2=area(m2) - Precio=RD$/m2'};
+  document.getElementById('aj-hint').textContent=h[t];
+}
+function cAjust(){
+  var elem=document.getElementById('aj-elem').value.trim()||'Sin nombre';
+  var d1=parseFloat(document.getElementById('aj-d1').value)||0,d2=parseFloat(document.getElementById('aj-d2').value)||0;
+  var cant=parseInt(document.getElementById('aj-cant').value)||1,precio=parseFloat(document.getElementById('aj-precio').value)||0;
+  if(!d1||!d2){alert('Ingrese ambas dimensiones.');return;}
+  var cantidad,unidad,total;
+  if(_ajT==='acero'){var qq=(0.994*d1*d2*cant)/45.36;total=qq*precio;unidad='qq';cantidad=qq;}
+  else{var area=d1*d2*cant;total=area*precio;unidad='m2';cantidad=area;}
+  window._lc={elem:elem+' ('+(_ajT==='acero'?'Acero':_ajT==='block'?'Block':'Encofrado')+')',tipo:'ajust',seccion:d1.toFixed(2)+'x'+d2.toFixed(2)+' m',detalle:[{dir:_ajT,diam:'--',sep:'--',n:cant,lBarra:d1,nElem:cant}],totalBarras:Math.round(d2*cant),longTotal:d1*d2*cant,qq:_ajT==='acero'?(0.994*d1*d2*cant)/45.36:0,N:cant};
+  var p=document.getElementById('aj-p');p.className='preview-box show';
+  p.innerHTML='<div class="preview-title">Resultado ajustero</div><div class="preview-grid">'
+  +'<div class="pv"><div class="pl">Cantidad</div><div class="pv2">'+cantidad.toFixed(3)+' '+unidad+'</div></div>'
+  +'<div class="pv"><div class="pl">Precio unit.</div><div class="pv2">RD$'+precio.toLocaleString('es-DO')+'</div></div>'
+  +'<div class="pv"><div class="pl">Total a pagar</div><div class="pv2" style="color:#185FA5;">RD$'+Math.round(total).toLocaleString('es-DO')+'</div></div></div>';
+  document.getElementById('btn-add-ajust').className='btn-add-res show';
+}
+
+// RESUMEN
+function addRes(){
+  if(!window._lc) return;
+  resultados.push(Object.assign({},window._lc,{id:Date.now()}));
+  renderRes();
+  window._lc=null;
+  irA('pg-elementos');
+  setTimeout(function(){var r=document.querySelector('.res-card');if(r)r.scrollIntoView({behavior:'smooth'});},300);
+}
+function delRes(id){resultados=resultados.filter(function(r){return r.id!==id;});renderRes();}
+function renderRes(){
+  var tb=document.getElementById('res-tbody'),tf=document.getElementById('res-tfoot');
+  if(!resultados.length){tb.innerHTML='<tr><td colspan="9" class="empty-msg">Calcule elementos arriba para ver el resumen</td></tr>';tf.style.display='none';updateKPIs();return;}
+  tb.innerHTML=resultados.map(function(r){
+    var ac=r.detalle.map(function(d){return d.diam!=='--'?DNOM[d.diam]:'--';}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(', ');
+    var sp=r.detalle.map(function(d){return d.sep!=='--'?(parseFloat(d.sep)*100).toFixed(0)+'cm':'--';}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(', ');
+    return '<tr><td style="font-weight:600;">'+r.elem+'</td><td style="font-size:12px;">'+r.seccion+'</td><td style="font-size:12px;">'+ac+'</td><td style="font-size:12px;">'+sp+'</td><td>'+r.N+'</td><td style="font-weight:700;color:#185FA5;">'+r.totalBarras+'</td><td>'+r.longTotal.toFixed(2)+'</td><td style="font-weight:700;">'+r.qq.toFixed(3)+' qq</td><td class="no-print"><button class="del-btn" onclick="delRes('+r.id+')">X</button></td></tr>';
+  }).join('');
+  tf.style.display='';
+  var tB=resultados.reduce(function(s,r){return s+r.totalBarras;},0);
+  var tL=resultados.reduce(function(s,r){return s+r.longTotal;},0);
+  var tQ=resultados.reduce(function(s,r){return s+r.qq;},0);
+  document.getElementById('tf-barras').textContent=tB;
+  document.getElementById('tf-long').textContent=tL.toFixed(2);
+  document.getElementById('tf-qq').textContent=tQ.toFixed(3)+' qq';
+  updateKPIs();
+}
+function updateKPIs(){
+  document.getElementById('k-elem').textContent=resultados.length;
+  document.getElementById('k-barras').textContent=resultados.reduce(function(s,r){return s+r.totalBarras;},0);
+  document.getElementById('k-long').textContent=resultados.reduce(function(s,r){return s+r.longTotal;},0).toFixed(2);
+  document.getElementById('k-qq').textContent=resultados.reduce(function(s,r){return s+r.qq;},0).toFixed(3);
+}
+</script>
+</body>
+</html>
